@@ -1,4 +1,4 @@
-# LAW-and-AI
+
 # Law and AI Portfolio
 
 Welcome to my portfolio exploring the intersection of Law and Artificial Intelligence. This repository collects insights, case studies, and resources on how AI is transforming the legal field.
