@@ -6,7 +6,7 @@ Welcome to my portfolio exploring the intersection of Law and Artificial Intelli
 ## About
 As AI integrates into legal practices, this portfolio covers applications, challenges, and future trends. It's built as a static site for easy browsing.
 
-View the live site: [https://carolkago.github.io/law-ai-portfolio](https://carolkago.github.io/law-ai-portfolio)
+View the live site: (https://carolkago.github.io/LAW-and-AI/)
 
 ## Topics
 - [AI Applications in the Legal Sector](./topics/ai-applications.md)
