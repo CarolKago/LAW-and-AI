@@ -5,45 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAW and AI</title>
     <style>
-        body {
-            background-color: #ffffff; /* White background */
-            color: #000000; /* Black text */
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        nav {
-            background-color: #000000; /* Black navigation bar */
-            color: #ffffff; /* White text in nav */
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #ffffff; /* White text for links */
-            margin: 0 15px;
-            text-decoration: none;
-        }
-        details {
-            border: 1px solid #000000; /* Black border for dropdowns */
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ffffff; /* White background for dropdown content */
-        }
-        summary {
-            font-weight: bold;
-            cursor: pointer;
-            color: #000000; /* Black summary text */
-        }
-        .topic-image {
-            max-width: 100%; /* Responsive image sizing */
-            height: auto;
-            margin: 10px 0;
-        }
-        p {
-            color: #000000; /* Black paragraph text */
-            line-height: 1.6;
-        }
-    </style>
+    body {
+        background-color: #ffffff; /* White background */
+        color: #000000; /* Black text */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 10px; /* Reduced from 20px */
+        scroll-behavior: smooth; /* Enables smooth scrolling for anchor links */
+    }
+    nav {
+        background-color: #000000; /* Black navigation bar */
+        color: #ffffff; /* White text in nav */
+        padding: 5px; /* Reduced from 10px */
+        text-align: center;
+        position: sticky; /* Keeps nav at top */
+        top: 0;
+        z-index: 1000;
+    }
+    nav a {
+        color: #ffffff; /* White text for links */
+        margin: 0 10px; /* Reduced from 15px */
+        text-decoration: none;
+    }
+    details {
+        border: 1px solid #000000; /* Black border for dropdowns */
+        margin: 5px 0; /* Reduced from 10px */
+        padding: 5px; /* Reduced from 10px */
+        background-color: #ffffff; /* White background for dropdown content */
+    }
+    summary {
+        font-weight: bold;
+        cursor: pointer;
+        color: #000000; /* Black summary text */
+    }
+    .topic-image {
+        max-width: 100%; /* Responsive image sizing */
+        height: auto;
+        margin: 5px 0; /* Reduced from 10px */
+    }
+    p {
+        color: #000000; /* Black paragraph text */
+        line-height: 1.4; /* Reduced from 1.6 for tighter text */
+    }
+    /* Offset anchor links to account for sticky nav */
+    :target {
+        padding-top: 60px; /* Adjust based on nav height */
+        margin-top: -60px; /* Negative margin to compensate */
+        display: block;
+    }
+</style>
 </head>
 <body>
     <nav>
