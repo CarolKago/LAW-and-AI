@@ -11,7 +11,6 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            scroll-behavior: smooth; /* Enables smooth scrolling */
         }
         header {
             background-color: #000000; /* Black header */
@@ -28,9 +27,6 @@
             color: #ffffff; /* White text */
             padding: 10px 0;
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
         nav a {
             color: #ffffff; /* White text for links */
@@ -46,149 +42,113 @@
             margin: 20px auto;
             padding: 0 15px;
         }
-        .topic-section {
+        details {
             border: 1px solid #000000; /* Black border */
             margin: 15px 0;
             padding: 10px;
             background-color: #ffffff; /* White background */
+        }
+        summary {
+            font-weight: bold;
             cursor: pointer;
+            color: #000000; /* Black summary text */
         }
-        .topic-section h2 {
-            margin: 0;
-            font-size: 1.5em;
-            color: #000000; /* Black heading */
+        p {
+            color: #000000; /* Black paragraph text */
+            line-height: 1.4;
         }
-        .topic-content {
-            display: none;
-            padding: 10px 0;
+        h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
         }
-        .topic-section.active .topic-content {
-            display: block;
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
         }
-        /* Anchor offset for sticky nav */
-        :target {
-            padding-top: 80px;
-            margin-top: -80px;
-            display: block;
+        li {
+            margin: 5px 0;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sections = document.querySelectorAll('.topic-section');
-            sections.forEach(section => {
-                section.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                });
-            });
-        });
-    </script>
 </head>
 <body>
     <header>
         <h1>LAW and AI</h1>
     </header>
     <nav>
-        <a href="#ai-applications">AI Applications</a>
-        <a href="#challenges">Challenges</a>
-        <a href="#case-studies">Case Studies</a>
-        <a href="#regulatory">Regulatory</a>
-        <a href="#ip-ai">IP & AI</a>
-        <a href="#privacy">Privacy</a>
-        <a href="#ethical">Ethical</a>
-        <a href="#future">Future</a>
+        <a>AI Applications</a>
+        <a>Challenges</a>
+        <a>Case Studies</a>
+        <a>Regulatory</a>
+        <a>IP & AI</a>
+        <a>Privacy</a>
+        <a>Ethical</a>
+        <a>Future</a>
     </nav>
     <div class="content">
-        <section id="ai-applications" class="topic-section">
-            <h2>AI Applications in the Legal Sector</h2>
-            <div class="topic-content">
-                <p>AI is transforming legal work by automating repetitive tasks and enhancing decision-making.</p>
-                <h3>Key Areas</h3>
-                <ul>
-                    <li>Legal Research: Tools like LexisNexis AI or Casetext speed up case law searches.</li>
-                    <li>Document Review: AI identifies key clauses in contracts.</li>
-                    <li>Predictive Analytics: AI forecasts case outcomes based on data.</li>
-                </ul>
-                <p>The legal sector was once looked at as a profession deeply rooted in human intellect and tradition but is now evolving and being redefined through technological innovation. Law firms and in-house legal departments have seen the rapid integration of AI systems in day-to-day activities, with 82% of lawyers now using or planning to use AI, a sharp increase from 39% in 2023. AI applications in the legal sector are diverse, encompassing tasks such as document analysis, contract intelligence, legal research, case outcome prediction, just to mention a few.</p>
-                <h3>Sources</h3>
-                <ul>
-                    <li>Pinsent Masons. (2025, August 26). <em>Artificial intelligence taking growing role in legal sector</em>. https://www.pinsentmasons.com/out-law/analysis/artificial-intelligence-growing-role-legal-sector</li>
-                    <li>The Barrister Group. (2025, August 26). <em>The impact of AI on the UK legal landscape: Opportunities, challenges, and regulatory perspectives</em>. https://thebarristergroup.co.uk/blog/the-impact-of-ai-on-the-uk-legal-landscape</li>
-                </ul>
-            </div>
-        </section>
-        <section id="challenges" class="topic-section">
-            <h2>Challenges and Navigation for Lawyers</h2>
-            <div class="topic-content">
-                <p>Lawyers must adapt to AI while addressing ethical and practical challenges.</p>
-                <h3>Key Challenges</h3>
-                <ul>
-                    <li>Ethics: Ensuring AI doesn’t violate client confidentiality.</li>
-                    <li>Bias: Addressing algorithmic biases in legal predictions.</li>
-                    <li>Upskilling: Learning to use AI tools effectively.</li>
-                </ul>
-                <h3>Navigation Strategies</h3>
-                <p>[Add how lawyers are training or integrating AI here.]</p>
-                <h3>Sources</h3>
-                <p>[Add URLs or citations as you research.]</p>
-            </div>
-        </section>
-        <section id="case-studies" class="topic-section">
-            <h2>Real-World Case Studies</h2>
-            <div class="topic-content">
-                <p>Examples of AI in legal practice.</p>
-                <p>Case Studies of AI in Legal Practice</p>
-                <p>AI has transformed legal practice through real-world applications, enhancing efficiency across firms. The following cases illustrate its impact.</p>
-                <h3>Examples</h3>
-                <ul>
-                    <li>Norton Rose Fulbright utilized AI-assisted e-discovery tools during the UK Government’s COVID-19 inquiry in 2023, processing thousands of documents weekly to focus on children’s rights data.</li>
-                    <li>VWV, a mid-sized law firm, invested £250,000 in AI and collaborated with tech start-up Robin AI in 2023. Involving trainee solicitors, this strategy improved contract reviews and drafting, reducing time by 20%.</li>
-                    <li>Allen & Overy integrated Harvey AI into legal research in 2023, assisting in contract drafting and research. The firm’s multi-million-pound investment cut research time by 30%, streamlining global workflows.</li>
-                    <li>Clifford Chance processed 10,000 documents monthly in 2025 mergers using AI, improving accuracy by 15%.</li>
-                </ul>
-                <h3>Sources</h3>
-                <p>[Add URLs or citations as you research.]</p>
-            </div>
-        </section>
-        <section id="regulatory" class="topic-section">
-            <h2>Regulatory and Policy Frameworks</h2>
-            <div class="topic-content">
-                <p>[Placeholder: Add Word document content here later]</p>
-            </div>
-        </section>
-        <section id="ip-ai" class="topic-section">
-            <h2>Intellectual Property and AI</h2>
-            <div class="topic-content">
-                <p>[Placeholder: Add Word document content here later]</p>
-            </div>
-        </section>
-        <section id="privacy" class="topic-section">
-            <h2>Privacy, Data Protection, and Liability</h2>
-            <div class="topic-content">
-                <p>[Placeholder: Add Word document content here later]</p>
-            </div>
-        </section>
-        <section id="ethical" class="topic-section">
-            <h2>Ethical and Societal Impacts</h2>
-            <div class="topic-content">
-                <p>AI’s broader implications for justice and society.</p>
-                <h3>Key Issues</h3>
-                <ul>
-                    <li>Fairness: Preventing bias in AI-driven legal decisions.</li>
-                    <li>Access to Justice: AI tools for underserved communities.</li>
-                    <li>Deepfakes: Risks in legal evidence.</li>
-                </ul>
-                <h3>Notes</h3>
-                <p>[Add ethical discussions or examples.]</p>
-                <h3>Sources</h3>
-                <p>[Add URLs or citations as you research.]</p>
-            </div>
-        </section>
-        <section id="future" class="topic-section">
-            <h2>Future Trends and Innovations</h2>
-            <div class="topic-content">
-                <p>[Placeholder: Add Word document content here later]</p>
-            </div>
-        </section>
+        <details>
+            <summary>AI Applications in the Legal Sector</summary>
+            <p>AI is transforming legal work by automating repetitive tasks and enhancing decision-making.</p>
+            <h3>Key Areas</h3>
+            <ul>
+                <li>Legal Research: Tools like LexisNexis AI or Casetext speed up case law searches.</li>
+                <li>Document Review: AI identifies key clauses in contracts.</li>
+                <li>Predictive Analytics: AI forecasts case outcomes based on data.</li>
+            </ul>
+            <p>The legal sector was once looked at as a profession deeply rooted in human intellect and tradition but is now evolving and being redefined through technological innovation. Law firms and in-house legal departments have seen the rapid integration of AI systems in day-to-day activities, with 82% of lawyers now using or planning to use AI, a sharp increase from 39% in 2023. AI applications in the legal sector are diverse, encompassing tasks such as document analysis, contract intelligence, legal research, case outcome prediction, just to mention a few.</p>
+        </details>
+        <details>
+            <summary>Challenges and Navigation for Lawyers</summary>
+            <p>Lawyers must adapt to AI while addressing ethical and practical challenges.</p>
+            <h3>Key Challenges</h3>
+            <ul>
+                <li>Ethics: Ensuring AI doesn’t violate client confidentiality.</li>
+                <li>Bias: Addressing algorithmic biases in legal predictions.</li>
+                <li>Upskilling: Learning to use AI tools effectively.</li>
+            </ul>
+            <h3>Navigation Strategies</h3>
+            <p>[Add how lawyers are training or integrating AI here.]</p>
+        </details>
+        <details>
+            <summary>Real-World Case Studies</summary>
+            <p>Examples of AI in legal practice.</p>
+            <p>Case Studies of AI in Legal Practice</p>
+            <p>AI has transformed legal practice through real-world applications, enhancing efficiency across firms. The following cases illustrate its impact.</p>
+            <h3>Examples</h3>
+            <ul>
+                <li>Norton Rose Fulbright utilized AI-assisted e-discovery tools during the UK Government’s COVID-19 inquiry in 2023, processing thousands of documents weekly to focus on children’s rights data.</li>
+                <li>VWV, a mid-sized law firm, invested £250,000 in AI and collaborated with tech start-up Robin AI in 2023. Involving trainee solicitors, this strategy improved contract reviews and drafting, reducing time by 20%.</li>
+                <li>Allen & Overy integrated Harvey AI into legal research in 2023, assisting in contract drafting and research. The firm’s multi-million-pound investment cut research time by 30%, streamlining global workflows.</li>
+                <li>Clifford Chance processed 10,000 documents monthly in 2025 mergers using AI, improving accuracy by 15%.</li>
+            </ul>
+        </details>
+        <details>
+            <summary>Regulatory and Policy Frameworks</summary>
+            <p>[Placeholder: Add Word document content here later]</p>
+        </details>
+        <details>
+            <summary>Intellectual Property and AI</summary>
+            <p>[Placeholder: Add Word document content here later]</p>
+        </details>
+        <details>
+            <summary>Privacy, Data Protection, and Liability</summary>
+            <p>[Placeholder: Add Word document content here later]</p>
+        </details>
+        <details>
+            <summary>Ethical and Societal Impacts</summary>
+            <p>AI’s broader implications for justice and society.</p>
+            <h3>Key Issues</h3>
+            <ul>
+                <li>Fairness: Preventing bias in AI-driven legal decisions.</li>
+                <li>Access to Justice: AI tools for underserved communities.</li>
+                <li>Deepfakes: Risks in legal evidence.</li>
+            </ul>
+            <h3>Notes</h3>
+            <p>[Add ethical discussions or examples.]</p>
+        </details>
+        <details>
+            <summary>Future Trends and Innovations</summary>
+            <p>[Placeholder: Add Word document content here later]</p>
+        </details>
     </div>
 </body>
 </html>
