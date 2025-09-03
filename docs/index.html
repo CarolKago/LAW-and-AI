@@ -14,7 +14,7 @@
             scroll-behavior: smooth; /* Enables smooth scrolling */
         }
         header {
-            background-color: #000000; /* Black header */
+            background-color: #00239c; /* Blue header */
             color: #ffffff; /* White text */
             text-align: center;
             padding: 20px 0;
@@ -24,10 +24,13 @@
             font-size: 2em;
         }
         nav {
-            background-color: #000000; /* Black navigation bar */
+            background-color: #00239c; /* Blue navigation bar */
             color: #ffffff; /* White text */
             padding: 10px 0;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         nav a {
             color: #ffffff; /* White text for links */
@@ -40,13 +43,13 @@
         }
         .content {
             max-width: 1200px; /* Increased for two-column layout */
-            margin: 20px auto;
+            margin: 10px auto; /* Reduced from 20px */
             padding: 0 15px;
         }
         details {
             border: 1px solid #000000; /* Black border */
-            margin: 20px 0; /* Sufficient margin */
-            padding: 20px; /* Sufficient padding */
+            margin: 10px 0; /* Reduced from 20px */
+            padding: 10px; /* Reduced from 20px */
             background-color: #ffffff; /* White background */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Added shadow for depth */
         }
@@ -59,31 +62,31 @@
         .topic-content {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px; /* Spacing between columns */
+            gap: 10px; /* Reduced from 20px */
         }
         .topic-column {
             flex: 1;
             min-width: 45%; /* Two-column layout */
-            padding: 10px;
+            padding: 5px; /* Reduced from 10px */
         }
         .topic-column img {
             width: 133px; /* Image size */
             height: 200px;
-            margin-bottom: 15px; /* Spacing below images */
+            margin-bottom: 10px; /* Reduced from 15px */
         }
         p {
-            line-height: 1.5;
+            line-height: 1.5; /* Retained for readability */
         }
         h3 {
-            margin: 10px 0;
+            margin: 10px 0; /* Retained for hierarchy */
             font-size: 1.2em;
         }
         ul {
             list-style-type: disc;
-            padding-left: 20px;
+            padding-left: 20px; /* Retained for consistency */
         }
         li {
-            margin: 5px 0;
+            margin: 5px 0; /* Retained for list spacing */
         }
         /* Responsive design */
         @media (max-width: 768px) {
@@ -94,7 +97,32 @@
                 min-width: 100%;
             }
         }
+        /* Offset for sticky nav */
+        :target {
+            padding-top: 50px; /* Adjusted to avoid overlap with sticky nav */
+            margin-top: -50px; /* Compensates for padding */
+            display: block;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const details = document.querySelectorAll('details');
+            // Handle navigation jumps
+            window.addEventListener('hashchange', function() {
+                const hash = window.location.hash;
+                details.forEach(detail => {
+                    detail.open = (detail.id === hash.substring(1));
+                });
+            });
+            // Open the initial target if present on load
+            if (window.location.hash) {
+                const initialTarget = document.querySelector(window.location.hash);
+                if (initialTarget) {
+                    details.forEach(detail => detail.open = (detail === initialTarget));
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <header>
