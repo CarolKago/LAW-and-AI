@@ -1,0 +1,16 @@
+transaction_id,account_id,amount,currency,transaction_type,merchant,description,timestamp
+txn-001,ACC0010,250.00,USD,debit,Amazon,Online purchase,2026-03-10T09:15:00
+txn-002,ACC0010,18500.00,USD,transfer,Wire Transfer,International wire,2026-03-10T10:30:00
+txn-003,ACC0011,75.50,USD,payment,Starbucks,Coffee,2026-03-10T14:00:00
+txn-004,ACC0011,320.00,USD,debit,Best Buy,Electronics,2026-03-10T15:45:00
+txn-005,ACC0012,500.00,USD,withdrawal,Chase ATM,ATM withdrawal,2026-03-10T02:17:00
+txn-006,ACC0012,450.00,USD,withdrawal,Chase ATM,ATM withdrawal,2026-03-10T02:45:00
+txn-007,ACC0013,8000.00,USD,payment,Airbnb,Long-term rental,2026-03-10T11:00:00
+txn-008,ACC0013,9500.00,USD,payment,Airbnb,Long-term rental,2026-03-10T11:30:00
+txn-009,ACC0013,8200.00,USD,payment,Airbnb,Long-term rental,2026-03-10T12:00:00
+txn-010,ACC0013,9800.00,USD,payment,Airbnb,Long-term rental,2026-03-10T12:30:00
+txn-011,ACC0013,8900.00,USD,payment,Airbnb,Long-term rental,2026-03-10T13:00:00
+txn-012,ACC0013,7600.00,USD,payment,Airbnb,Long-term rental,2026-03-10T13:30:00
+txn-013,ACC0014,120.00,USD,debit,Uber,Ride,2026-03-11T09:00:00
+txn-014,ACC0014,340.00,USD,debit,Netflix,Subscription,2026-03-11T10:00:00
+txn-015,ACC0014,95.00,USD,debit,Shell,Fuel,2026-03-11T03:22:00

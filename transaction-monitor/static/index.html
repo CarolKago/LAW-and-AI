@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Reset & base ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --surface2:  #22263a;
+      --border:    #2e3250;
+      --accent:    #4f8ef7;
+      --green:     #22c55e;
+      --yellow:    #f59e0b;
+      --red:       #ef4444;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --radius:    10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    header h1 { font-size: 18px; font-weight: 700; color: var(--accent); }
+    header span { color: var(--muted); font-size: 12px; }
+
+    main { padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+
+    /* ── Stat cards ──────────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+
+    .stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+    .stat-card .value { font-size: 32px; font-weight: 700; }
+    .stat-card.green .value { color: var(--green); }
+    .stat-card.red   .value { color: var(--red);   }
+    .stat-card.yellow .value { color: var(--yellow); }
+    .stat-card.blue   .value { color: var(--accent); }
+
+    /* ── Actions bar ─────────────────────────────────────────────────────── */
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 28px; align-items: center;
+    }
+
+    button {
+      padding: 9px 18px;
+      border: none; border-radius: 7px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s;
+    }
+    button:hover { opacity: .85; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-primary  { background: var(--accent);  color: #fff; }
+    .btn-success  { background: var(--green);   color: #fff; }
+    .btn-warning  { background: var(--yellow);  color: #000; }
+    .btn-danger   { background: var(--red);     color: #fff; }
+    .btn-ghost    { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+    input[type="file"] { display: none; }
+    label.upload-label {
+      display: inline-block;
+      padding: 9px 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s;
+    }
+    label.upload-label:hover { opacity: .85; }
+
+    .status-msg { margin-left: 10px; font-size: 12px; color: var(--muted); }
+
+    /* ── Charts row ──────────────────────────────────────────────────────── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    @media(max-width:900px){ .charts-row { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .chart-card h2 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .07em; }
+
+    /* ── Tables ──────────────────────────────────────────────────────────── */
+    .section { margin-bottom: 32px; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-header h2 { font-size: 15px; font-weight: 700; }
+
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filters input, .filters select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 12px; color: var(--text); font-size: 13px;
+    }
+
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--surface2); }
+    th { padding: 11px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+    td { padding: 11px 14px; border-top: 1px solid var(--border); font-size: 13px; white-space: nowrap; }
+    tr:hover td { background: rgba(79,142,247,.05); }
+
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600;
+    }
+    .badge-red    { background: rgba(239,68,68,.15);   color: var(--red);    }
+    .badge-green  { background: rgba(34,197,94,.15);   color: var(--green);  }
+    .badge-yellow { background: rgba(245,158,11,.15);  color: var(--yellow); }
+    .badge-blue   { background: rgba(79,142,247,.15);  color: var(--accent); }
+
+    .pagination { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; align-items: center; font-size: 13px; color: var(--muted); }
+    .pagination button { padding: 5px 14px; font-size: 12px; }
+
+    /* ── Config panel ────────────────────────────────────────────────────── */
+    .config-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 32px;
+      display: none;
+    }
+    .config-panel.open { display: block; }
+    .config-panel h2 { font-size: 15px; font-weight: 700; margin-bottom: 18px; }
+
+    .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .config-item label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; }
+    .config-item input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px 12px; color: var(--text); font-size: 14px;
+    }
+    .config-actions { margin-top: 18px; display: flex; gap: 10px; }
+
+    /* ── Toast ───────────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 20px;
+      font-size: 13px; opacity: 0; transition: opacity .25s;
+      max-width: 360px;
+    }
+    #toast.show { opacity: 1; }
+    #toast.success { border-color: var(--green); color: var(--green); }
+    #toast.error   { border-color: var(--red);   color: var(--red);   }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#9673; Transaction Monitor</h1>
+  <span id="last-refresh">–</span>
+</header>
+
+<main>
+
+  <!-- Stat cards -->
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="label">Total Transactions</div>
+      <div class="value" id="stat-total">–</div>
+    </div>
+    <div class="stat-card red">
+      <div class="label">Total Alerts</div>
+      <div class="value" id="stat-alerts">–</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="label">Flagged Accounts</div>
+      <div class="value" id="stat-accounts">–</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">High-Frequency</div>
+      <div class="value" id="stat-freq">–</div>
+    </div>
+    <div class="stat-card red">
+      <div class="label">Large Transactions</div>
+      <div class="value" id="stat-large">–</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="label">High Daily Volume</div>
+      <div class="value" id="stat-volume">–</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">Unusual Hours</div>
+      <div class="value" id="stat-hours">–</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn-primary" onclick="simulate()">&#9654; Load Demo Data</button>
+    <label class="upload-label" for="csv-input">&#8679; Upload CSV</label>
+    <input type="file" id="csv-input" accept=".csv" onchange="uploadCSV(event)" />
+    <button class="btn-success"  onclick="exportCSV()">&#8681; Export Flagged CSV</button>
+    <button class="btn-ghost"    onclick="toggleConfig()">&#9881; Thresholds</button>
+    <button class="btn-danger"   onclick="wipeData()">&#128465; Wipe Data</button>
+    <button class="btn-ghost"    onclick="refreshAll()">&#8635; Refresh</button>
+    <span class="status-msg" id="status-msg"></span>
+  </div>
+
+  <!-- Config panel -->
+  <div class="config-panel" id="config-panel">
+    <h2>Alert Thresholds</h2>
+    <div class="config-grid">
+      <div class="config-item">
+        <label>Large Transaction ($)</label>
+        <input type="number" id="cfg-large" />
+      </div>
+      <div class="config-item">
+        <label>Daily Volume Limit ($)</label>
+        <input type="number" id="cfg-volume" />
+      </div>
+      <div class="config-item">
+        <label>Max Transactions per Window</label>
+        <input type="number" id="cfg-freq-max" />
+      </div>
+      <div class="config-item">
+        <label>Frequency Window (minutes)</label>
+        <input type="number" id="cfg-freq-win" />
+      </div>
+      <div class="config-item">
+        <label>Unusual Hours Start (0-23)</label>
+        <input type="number" id="cfg-hour-start" min="0" max="23" />
+      </div>
+      <div class="config-item">
+        <label>Unusual Hours End (0-23)</label>
+        <input type="number" id="cfg-hour-end" min="0" max="23" />
+      </div>
+    </div>
+    <div class="config-actions">
+      <button class="btn-primary" onclick="saveThresholds()">Save Thresholds</button>
+      <button class="btn-ghost"   onclick="loadThresholds()">Reset</button>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h2>Alerts by Rule</h2>
+      <canvas id="chart-rules" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h2>Transaction Volume (last 8 days)</h2>
+      <canvas id="chart-volume" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Alerts table -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Recent Alerts</h2>
+      <div class="filters">
+        <select id="filter-rule" onchange="loadAlerts()">
+          <option value="">All Rules</option>
+          <option value="HIGH_FREQUENCY">High Frequency</option>
+          <option value="LARGE_TRANSACTION">Large Transaction</option>
+          <option value="HIGH_DAILY_VOLUME">High Daily Volume</option>
+          <option value="UNUSUAL_HOURS">Unusual Hours</option>
+        </select>
+        <input type="text" id="filter-alert-account" placeholder="Account ID…" onkeyup="debounce(loadAlerts, 400)()" />
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rule</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Tx Time</th>
+            <th>Flagged At</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody id="alerts-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <button class="btn-ghost" id="alerts-prev" onclick="alertsPage--; loadAlerts()">‹ Prev</button>
+      <span id="alerts-page-info"></span>
+      <button class="btn-ghost" id="alerts-next" onclick="alertsPage++; loadAlerts()">Next ›</button>
+    </div>
+  </div>
+
+  <!-- Transactions table -->
+  <div class="section">
+    <div class="section-header">
+      <h2>All Transactions</h2>
+      <div class="filters">
+        <input type="text" id="filter-tx-account" placeholder="Account ID…" onkeyup="debounce(loadTransactions, 400)()" />
+        <select id="filter-flagged" onchange="loadTransactions()">
+          <option value="false">All</option>
+          <option value="true">Flagged Only</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tx ID</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Merchant</th>
+            <th>Timestamp</th>
+            <th>Alerts</th>
+          </tr>
+        </thead>
+        <tbody id="tx-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <button class="btn-ghost" id="tx-prev" onclick="txPage--; loadTransactions()">‹ Prev</button>
+      <span id="tx-page-info"></span>
+      <button class="btn-ghost" id="tx-next" onclick="txPage++; loadTransactions()">Next ›</button>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let txPage = 0, alertsPage = 0;
+const PAGE_SIZE = 20;
+let rulesChart = null, volumeChart = null;
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `show ${type}`;
+  setTimeout(() => el.className = '', 3000);
+}
+
+function setStatus(msg) {
+  document.getElementById('status-msg').textContent = msg;
+}
+
+// ── Debounce ──────────────────────────────────────────────────────────────────
+function debounce(fn, delay) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch(path, opts);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || res.statusText);
+  }
+  return res.json();
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const s = await api('/api/stats');
+    document.getElementById('stat-total').textContent    = s.total_transactions.toLocaleString();
+    document.getElementById('stat-alerts').textContent   = s.total_alerts.toLocaleString();
+    document.getElementById('stat-accounts').textContent = s.flagged_accounts.toLocaleString();
+
+    const r = s.alerts_by_rule || {};
+    document.getElementById('stat-freq').textContent    = (r.HIGH_FREQUENCY       || 0).toLocaleString();
+    document.getElementById('stat-large').textContent   = (r.LARGE_TRANSACTION    || 0).toLocaleString();
+    document.getElementById('stat-volume').textContent  = (r.HIGH_DAILY_VOLUME    || 0).toLocaleString();
+    document.getElementById('stat-hours').textContent   = (r.UNUSUAL_HOURS        || 0).toLocaleString();
+
+    updateRulesChart(r);
+    document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch(e) { toast('Failed to load stats: ' + e.message, 'error'); }
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+function updateRulesChart(rules) {
+  const labels = ['High Frequency', 'Large Transaction', 'High Daily Volume', 'Unusual Hours'];
+  const data   = [
+    rules.HIGH_FREQUENCY    || 0,
+    rules.LARGE_TRANSACTION || 0,
+    rules.HIGH_DAILY_VOLUME || 0,
+    rules.UNUSUAL_HOURS     || 0,
+  ];
+  const colors = ['#f59e0b','#ef4444','#a855f7','#4f8ef7'];
+
+  if (rulesChart) { rulesChart.data.datasets[0].data = data; rulesChart.update(); return; }
+  rulesChart = new Chart(document.getElementById('chart-rules'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
+    options: {
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+      cutout: '65%',
+    },
+  });
+}
+
+async function loadVolumeChart() {
+  try {
+    const res = await api('/api/transactions?limit=1000');
+    const txs = res.transactions;
+
+    // Bucket by day
+    const buckets = {};
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      buckets[key] = { normal: 0, flagged: 0 };
+    }
+    for (const tx of txs) {
+      const key = tx.timestamp.slice(0, 10);
+      if (buckets[key] !== undefined) {
+        if (tx.flagged) buckets[key].flagged += tx.amount;
+        else            buckets[key].normal  += tx.amount;
+      }
+    }
+
+    const labels  = Object.keys(buckets);
+    const normal  = labels.map(k => +buckets[k].normal.toFixed(2));
+    const flagged = labels.map(k => +buckets[k].flagged.toFixed(2));
+
+    if (volumeChart) {
+      volumeChart.data.labels = labels;
+      volumeChart.data.datasets[0].data = normal;
+      volumeChart.data.datasets[1].data = flagged;
+      volumeChart.update(); return;
+    }
+    volumeChart = new Chart(document.getElementById('chart-volume'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Normal ($)', data: normal,  backgroundColor: 'rgba(34,197,94,.6)',  borderRadius: 4 },
+          { label: 'Flagged ($)', data: flagged, backgroundColor: 'rgba(239,68,68,.6)', borderRadius: 4 },
+        ],
+      },
+      options: {
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+        scales: {
+          x: { stacked: true, ticks: { color: '#64748b' }, grid: { color: '#2e3250' } },
+          y: { stacked: true, ticks: { color: '#64748b', callback: v => '$' + v.toLocaleString() }, grid: { color: '#2e3250' } },
+        },
+      },
+    });
+  } catch(e) { console.warn('Volume chart error:', e); }
+}
+
+// ── Alerts table ──────────────────────────────────────────────────────────────
+const RULE_BADGE = {
+  HIGH_FREQUENCY:    'badge-yellow',
+  LARGE_TRANSACTION: 'badge-red',
+  HIGH_DAILY_VOLUME: 'badge-red',
+  UNUSUAL_HOURS:     'badge-blue',
+};
+
+async function loadAlerts() {
+  try {
+    const rule    = document.getElementById('filter-rule').value;
+    const account = document.getElementById('filter-alert-account').value.trim();
+    let url = `/api/alerts?limit=${PAGE_SIZE}&offset=${alertsPage * PAGE_SIZE}`;
+    if (rule)    url += `&rule=${encodeURIComponent(rule)}`;
+    if (account) url += `&account_id=${encodeURIComponent(account)}`;
+
+    const data = await api(url);
+    const body = document.getElementById('alerts-body');
+    body.innerHTML = data.alerts.map(a => `
+      <tr>
+        <td><span class="badge ${RULE_BADGE[a.rule] || 'badge-blue'}">${a.rule.replace(/_/g,' ')}</span></td>
+        <td>${a.transaction.account_id}</td>
+        <td>$${a.transaction.amount.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+        <td>${fmtDate(a.transaction.timestamp)}</td>
+        <td>${fmtDate(a.flagged_at)}</td>
+        <td style="white-space:normal;max-width:320px">${a.detail}</td>
+      </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No alerts</td></tr>';
+
+    document.getElementById('alerts-page-info').textContent = `Page ${alertsPage + 1} — ${data.total} total`;
+    document.getElementById('alerts-prev').disabled = alertsPage === 0;
+    document.getElementById('alerts-next').disabled = (alertsPage + 1) * PAGE_SIZE >= data.total;
+  } catch(e) { toast('Failed to load alerts: ' + e.message, 'error'); }
+}
+
+// ── Transactions table ────────────────────────────────────────────────────────
+async function loadTransactions() {
+  try {
+    const account = document.getElementById('filter-tx-account').value.trim();
+    const flagged = document.getElementById('filter-flagged').value;
+    let url = `/api/transactions?limit=${PAGE_SIZE}&offset=${txPage * PAGE_SIZE}`;
+    if (account) url += `&account_id=${encodeURIComponent(account)}`;
+    if (flagged === 'true') url += `&flagged_only=true`;
+
+    const data = await api(url);
+    const body = document.getElementById('tx-body');
+    body.innerHTML = data.transactions.map(t => `
+      <tr>
+        <td style="font-family:monospace;font-size:12px">${t.transaction_id.slice(0,12)}…</td>
+        <td>${t.account_id}</td>
+        <td>$${t.amount.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+        <td><span class="badge badge-blue">${t.type}</span></td>
+        <td>${t.merchant || '–'}</td>
+        <td>${fmtDate(t.timestamp)}</td>
+        <td>
+          ${t.flagged
+            ? `<span class="badge badge-red">&#9888; ${t.alert_count} alert${t.alert_count > 1 ? 's' : ''}</span>`
+            : '<span class="badge badge-green">Clean</span>'}
+        </td>
+      </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No transactions</td></tr>';
+
+    document.getElementById('tx-page-info').textContent = `Page ${txPage + 1} — ${data.total} total`;
+    document.getElementById('tx-prev').disabled = txPage === 0;
+    document.getElementById('tx-next').disabled = (txPage + 1) * PAGE_SIZE >= data.total;
+  } catch(e) { toast('Failed to load transactions: ' + e.message, 'error'); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  return new Date(iso).toLocaleString(undefined, { dateStyle:'short', timeStyle:'short' });
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+async function simulate() {
+  setStatus('Loading demo data…');
+  try {
+    const r = await api('/api/simulate', { method: 'POST' });
+    toast(`Demo data loaded: ${r.ingested} transactions, ${r.flagged} flagged`);
+    refreshAll();
+  } catch(e) { toast(e.message, 'error'); }
+  setStatus('');
+}
+
+async function uploadCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  setStatus(`Uploading ${file.name}…`);
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const r = await api('/api/upload', { method: 'POST', body: form });
+    toast(`Uploaded: ${r.ingested} ingested, ${r.flagged} flagged${r.errors.length ? ', ' + r.errors.length + ' errors' : ''}`);
+    refreshAll();
+  } catch(e) { toast(e.message, 'error'); }
+  event.target.value = '';
+  setStatus('');
+}
+
+async function exportCSV() {
+  try {
+    const r = await api('/api/reports/csv', { method: 'POST' });
+    toast(`CSV exported: ${r.file}`);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function wipeData() {
+  if (!confirm('Delete ALL transactions and alerts? This cannot be undone.')) return;
+  try {
+    await api('/api/data', { method: 'DELETE' });
+    toast('All data wiped', 'error');
+    refreshAll();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Config ────────────────────────────────────────────────────────────────────
+function toggleConfig() {
+  const p = document.getElementById('config-panel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) loadThresholds();
+}
+
+async function loadThresholds() {
+  try {
+    const t = await api('/api/config/thresholds');
+    document.getElementById('cfg-large').value      = t.large_tx_threshold;
+    document.getElementById('cfg-volume').value     = t.daily_volume_threshold;
+    document.getElementById('cfg-freq-max').value   = t.frequency_max_tx;
+    document.getElementById('cfg-freq-win').value   = t.frequency_window_minutes;
+    document.getElementById('cfg-hour-start').value = t.unusual_hour_start;
+    document.getElementById('cfg-hour-end').value   = t.unusual_hour_end;
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function saveThresholds() {
+  const body = {
+    large_tx_threshold:       +document.getElementById('cfg-large').value,
+    daily_volume_threshold:   +document.getElementById('cfg-volume').value,
+    frequency_max_tx:         +document.getElementById('cfg-freq-max').value,
+    frequency_window_minutes: +document.getElementById('cfg-freq-win').value,
+    unusual_hour_start:       +document.getElementById('cfg-hour-start').value,
+    unusual_hour_end:         +document.getElementById('cfg-hour-end').value,
+  };
+  try {
+    await api('/api/config/thresholds', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    toast('Thresholds saved');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Full refresh ──────────────────────────────────────────────────────────────
+function refreshAll() {
+  txPage = 0; alertsPage = 0;
+  loadStats();
+  loadVolumeChart();
+  loadAlerts();
+  loadTransactions();
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+refreshAll();
+setInterval(refreshAll, 30_000); // auto-refresh every 30 s
+</script>
+</body>
+</html>
