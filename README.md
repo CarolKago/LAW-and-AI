@@ -10,13 +10,6 @@ View the live site: (https://carolkago.github.io/LAW-and-AI/)
 
 ## Topics
 - [AI Applications in the Legal Sector](./topics/ai-applications.md)
-- [Challenges and Navigation for Lawyers](./topics/challenges-navigation.md)
-- [Real-World Case Studies](./topics/case-studies.md)
-- [Regulatory and Policy Frameworks](./topics/regulatory-frameworks.md)
-- [Intellectual Property and AI](./topics/ip-ai.md)
-- [Privacy, Data Protection, and Liability](./topics/privacy-liability.md)
-- [Ethical and Societal Impacts](./topics/ethical-impacts.md)
-- [Future Trends and Innovations](./topics/future-trends.md)
 
 ## Getting Started
 Clone this repo: `git clone https://github.com/CarolKago/law-ai-portfolio.git`
